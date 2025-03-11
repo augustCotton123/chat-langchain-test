@@ -305,7 +305,9 @@ def create_chain(llm: LanguageModelLike, retriever: BaseRetriever) -> Runnable:
 # ).with_fallbacks(
 #     [gpt_3_5, claude_3_haiku, fireworks_mixtral, gemini_pro, cohere_command]
 # )
-llm = Ollama(model="mistral")
+
+# llm = Ollama(model="mistral")
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True)
 
 retriever = get_retriever()
 answer_chain = create_chain(llm, retriever)

@@ -22,13 +22,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# def get_embeddings_model() -> Embeddings:
-#     return OpenAIEmbeddings(model="text-embedding-3-small", chunk_size=200)
-
-from langchain_community.embeddings import OllamaEmbeddings
-
 def get_embeddings_model() -> Embeddings:
-    return OllamaEmbeddings(model="nomic-embed-text")
+    return OpenAIEmbeddings(model="text-embedding-3-small", chunk_size=200)
+
+# from langchain_community.embeddings import OllamaEmbeddings
+
+# def get_embeddings_model() -> Embeddings:
+#     return OllamaEmbeddings(model="nomic-embed-text")
 
 
 def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
@@ -105,7 +105,7 @@ def load_api_docs():
 # function for custom metadata
 def metadata_func(record: dict, metadata: dict) -> dict:
 
-    metadata["title"] = record.get("article_title")
+    # metadata["title"] = record.get("article_title")
     metadata["publish_date"] = record.get("publish_date")
     metadata["claim_author"] = record.get("claim_author")
     metadata["rating"] = record.get("rating")

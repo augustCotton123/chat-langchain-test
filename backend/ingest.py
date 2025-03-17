@@ -11,7 +11,7 @@ from langchain_community.document_loaders import JSONLoader
 from langchain.indexes import SQLRecordManager, index
 from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-# from langchain_weaviate import WeaviateVectorStore
+from langchain_weaviate import WeaviateVectorStore
 from langchain_community.vectorstores import Chroma
 
 from constants import WEAVIATE_DOCS_INDEX_NAME
@@ -142,49 +142,49 @@ def load_vf_docs():
 
 
 def ingest_docs():
-    # WEAVIATE_URL = os.environ["WEAVIATE_URL"]
-    # WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
-    # RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
+    WEAVIATE_URL = os.environ["WEAVIATE_URL"]
+    WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
+    RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
 
-    DATABASE_HOST = os.environ["DATABASE_HOST"]
-    DATABASE_PORT = os.environ["DATABASE_PORT"]
-    DATABASE_USERNAME = os.environ["DATABASE_USERNAME"]
-    DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
-    DATABASE_NAME = os.environ["DATABASE_NAME"]
-    RECORD_MANAGER_DB_URL = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+    # DATABASE_HOST = os.environ["DATABASE_HOST"]
+    # DATABASE_PORT = os.environ["DATABASE_PORT"]
+    # DATABASE_USERNAME = os.environ["DATABASE_USERNAME"]
+    # DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
+    # DATABASE_NAME = os.environ["DATABASE_NAME"]
+    # RECORD_MANAGER_DB_URL = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
     embedding = get_embeddings_model()
 
-    # with weaviate.connect_to_weaviate_cloud(
-    #     cluster_url=WEAVIATE_URL,
-    #     auth_credentials=weaviate.classes.init.Auth.api_key(WEAVIATE_API_KEY),
-    #     skip_init_checks=True,
-    # ) as weaviate_client:
-    #     vectorstore = WeaviateVectorStore(
-    #         client=weaviate_client,
-    #         index_name=WEAVIATE_DOCS_INDEX_NAME,
-    #         text_key="text",
-    #         embedding=embedding,
-    #         attributes=["source", "title"],
-    #     )
+    with weaviate.connect_to_weaviate_cloud(
+        cluster_url=WEAVIATE_URL,
+        auth_credentials=weaviate.classes.init.Auth.api_key(WEAVIATE_API_KEY),
+        skip_init_checks=True,
+    ) as weaviate_client:
+        vectorstore = WeaviateVectorStore(
+            client=weaviate_client,
+            index_name=WEAVIATE_DOCS_INDEX_NAME,
+            text_key="text",
+            embedding=embedding,
+            attributes=["source", "title"],
+        )
 
-    COLLECTION_NAME = os.environ["COLLECTION_NAME"]
+    # COLLECTION_NAME = os.environ["COLLECTION_NAME"]
 
-    vectorstore = Chroma(
-        collection_name=COLLECTION_NAME,
-        embedding_function=embedding,
-        persist_directory="./chroma_chat_langchain_test_db",
-    )
-    vectorstore.persist()
-
-    # record_manager = SQLRecordManager(
-    #     f"weaviate/{WEAVIATE_DOCS_INDEX_NAME}", db_url=RECORD_MANAGER_DB_URL
+    # vectorstore = Chroma(
+    #     collection_name=COLLECTION_NAME,
+    #     embedding_function=embedding,
+    #     persist_directory="./chroma_chat_langchain_test_db",
     # )
+    # vectorstore.persist()
 
     record_manager = SQLRecordManager(
-        f"weaviate/{COLLECTION_NAME}", db_url=RECORD_MANAGER_DB_URL
+        f"weaviate/{WEAVIATE_DOCS_INDEX_NAME}", db_url=RECORD_MANAGER_DB_URL
     )
+
+    # record_manager = SQLRecordManager(
+    #     f"weaviate/{COLLECTION_NAME}", db_url=RECORD_MANAGER_DB_URL
+    # )
     record_manager.create_schema()
 
     # docs_from_documentation = load_langchain_docs()
